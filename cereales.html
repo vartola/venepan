@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cereales - VENEPAN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+<div class="container">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-seedling" style="font-size: 40px; color: var(--venepan-red);"></i>
+            <h2>VENEPAN</h2>
+            <p>Sistema de Control</p>
+        </div>
+    </aside>
+
+
+    <main class="main-content">
+       <header class="top-bar">
+    <div class="page-info">
+        <h2>Panel de Cereales</h2>
+        <span>Control de Producción y Despacho</span>
+    </div>
+
+    <div class="top-icons">
+        <!-- MENÚ HAMBURGUESA -->
+        <div class="menu-desplegable-container">
+            <i class="fas fa-bars menu-hamburguesa" id="menuHamburguesa" style="cursor: pointer;"></i>
+            
+            <!-- Menú desplegable (solo UNA vez) -->
+            <div class="menu-desplegable" id="menuDesplegable">
+                <div class="menu-item" data-seccion="produccion">
+                    <i class="fas fa-industry"></i>
+                    <span>Registro Producción</span>
+                </div>
+                <div class="menu-item" data-seccion="despacho">
+                    <i class="fas fa-truck-loading"></i>
+                    <span>Entrega a Despacho</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- LUPA -->
+        <i class="fas fa-search" id="lupa-busqueda" style="cursor: pointer;"></i>
+    </div>
+</header>
+
+        <div class="tables-container">
+            <div class="card tabla-producto">
+                <div class="card-header">
+                    <h3><i class="fas fa-history"></i> Historial Producción</h3>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table id="tabla-prod-cereales">
+                        <thead>
+                            <tr>
+                                <th>Fecha / Cereal</th>
+                                <th>Total Kg</th>
+                                <th>1ra Kg</th>
+                                <th>Desechos</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historial-produccion-cereales"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card tabla-producto">
+                <div class="card-header">
+                    <h3><i class="fas fa-clipboard-check"></i> Historial Despacho</h3>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table id="tabla-desp-cereales">
+                        <thead>
+                            <tr>
+                                <th>Lote</th>
+                                <th>Presentación</th>
+                                <th>Seg/Vir</th>
+                                <th>Rend. %</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historial-despacho-cereales"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== OVERLAY Y MODAL PARA FORMULARIOS ===== -->
+        <div id="form-overlay" class="form-overlay"></div>
+
+        <div id="form-contenedor" class="form-contenedor">
+            <div class="form-header">
+                <h2 id="titulo-formulario">
+                    <i class="fas fa-industry"></i>
+                    Registro de Producción
+                </h2>
+                <button id="btn-cerrar-form" class="btn-cerrar-form">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="form-body" id="form-body-cereales">
+                <!-- Aquí se inyectarán los formularios con JavaScript -->
+            </div>
+        </div>
+
+                <!-- ===== MODAL DE BÚSQUEDA POR MES/AÑO ===== -->
+        <div id="modal-busqueda-cereales" class="expediente-modal" style="display: none;">
+            <div class="expediente-contenido" style="max-width: 400px;">
+                <div class="expediente-header">
+                    <h2>
+                        <i class="fas fa-search"></i>
+                        Buscar por Período
+                    </h2>
+                    <button class="cerrar-expediente" onclick="cerrarModalBusquedaCereales()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="expediente-body">
+                    <div class="grid-form" style="grid-template-columns: 1fr 1fr;">
+                        <div class="input-group">
+                            <label>Mes</label>
+                            <select id="buscar-mes-cereales">
+                                <option value="1">Enero</option>
+                                <option value="2">Febrero</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Mayo</option>
+                                <option value="6">Junio</option>
+                                <option value="7">Julio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Septiembre</option>
+                                <option value="10">Octubre</option>
+                                <option value="11">Noviembre</option>
+                                <option value="12">Diciembre</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Año</label>
+                            <select id="buscar-anio-cereales">
+                               
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="expediente-footer">
+                    <button class="btn-cerrar" onclick="cerrarModalBusquedaCereales()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button class="btn-imprimir" onclick="buscarPorMesAnioCereales()">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div> 
+
+<script src="menu.js"></script>
+<script src="cereales.js"></script>
+</body>
+</html>

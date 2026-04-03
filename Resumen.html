@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen Mensual - VENEPAN</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js para gráficos profesionales -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar"></aside>
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-info">
+                    <h2 id="tituloVista">Resumen Mensual de Producción</h2>
+                    <span id="subtituloVista">Análisis comparativo entre meses</span>
+                </div>
+                <div class="top-icons">
+                    <div class="menu-desplegable-container">
+                        <i class="fas fa-bars menu-hamburguesa" onclick="toggleMenu()"></i>
+                        <div class="menu-desplegable" id="menuDesplegable">
+                            <div class="menu-item" onclick="cambiarVista('mensual')">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span> Vista Mensual</span>
+                            </div>
+                            <div class="menu-item" onclick="cambiarVista('semanal')">
+                                <i class="fas fa-calendar-week"></i>
+                                <span>Vista Semanal</span>
+                            </div>
+                            <div class="menu-item" onclick="cambiarVista('diaria')">
+                                <i class="fas fa-calendar-day"></i>
+                                <span> Vista Diaria</span>
+                            </div>
+                            <div class="menu-item" onclick="cambiarVista('anual')">
+                                <i class="fas fa-chart-line"></i>
+                                <span> Vista Anual</span>
+                            </div>
+                        </div>
+                    </div>
+                    <i class="fas fa-download"></i>
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </header>
+
+            <!-- Selector de comparación de meses -->
+            <div class="comparador-meses">
+                <h3 style="margin-bottom: 15px; color: var(--venepan-red);">
+                    <i class="fas fa-chart-line"></i> Comparación Mes a Mes
+                </h3>
+                <div class="selector-meses">
+                    <div class="selector-grupo">
+                        <label><i class="fas fa-calendar-alt"></i> Mes Base</label>
+                        <select id="mesBase">
+                            <option value="">Seleccionar mes</option>
+                        </select>
+                    </div>
+                    <div class="selector-grupo">
+                        <label><i class="fas fa-calendar-alt"></i> Mes Comparación</label>
+                        <select id="mesComparacion">
+                            <option value="">Seleccionar mes</option>
+                        </select>
+                    </div>
+                    <button class="btn-comparar" onclick="compararMeses()">
+                        <i class="fas fa-chart-simple"></i> Comparar
+                    </button>
+                    <button class="btn-comparar" onclick="verMesActual()" style="background: #3498db;">
+                        <i class="fas fa-calendar-day"></i> Mes Actual
+                    </button>
+                </div>
+                
+                <!-- Resumen de comparación -->
+                <div id="comparacionResumen" style="display: none;"></div>
+            </div>
+
+            <!-- Pestañas para cambiar vista -->
+            <div class="tabs-comparacion">
+                <button class="tab-btn active" onclick="cambiarTab('mensual')">
+                    <i class="fas fa-chart-bar"></i> Vista Mensual
+                </button>
+                <button class="tab-btn" onclick="cambiarTab('comparativa')">
+                    <i class="fas fa-chart-line"></i> Comparativa Mes a Mes
+                </button>
+            </div>
+
+            <!-- Contenido de la pestaña Mensual (vista original) -->
+            <div id="tabMensual" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card red">
+                        <div class="stat-icon"><i class="fas fa-bread-slice"></i></div>
+                        <div class="stat-data">
+                            <h3 id="total-productos-count">0</h3>
+                            <p>Tipos de Pan</p>
+                        </div>
+                    </div>
+                    <div class="stat-card red">
+                        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div class="stat-data">
+                            <h3 id="dias-registrados">0</h3>
+                            <p>Días con Actividad</p>
+                        </div>
+                    </div>
+                    <div class="stat-card red">
+                        <div class="stat-icon"><i class="fas fa-weight-hanging"></i></div>
+                        <div class="stat-data">
+                            <h3 id="total-kilos">0.00 kg</h3>
+                            <p>Producción Total</p>
+                        </div>
+                    </div>
+                    <div class="stat-card red">
+                        <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                        <div class="stat-data">
+                            <h3 id="rendimiento-promedio">0%</h3>
+                            <p>Rendimiento Promedio</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-layout">
+                    <div class="resumen-table-section">
+                        <div id="resumen"></div>
+                    </div>
+                    <div class="graficos-section">
+                        <div class="grafico-card">
+                            <div class="grafico-header">
+                                <i class="fas fa-chart-bar"></i>
+                                <div>
+                                    <h4>Comparativa por Producto</h4>
+                                    <p>Planificación vs Producción Real (Kg)</p>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="comparativaChart" style="width:100%; max-height: 280px;"></canvas>
+                            </div>
+                            <div class="stats-mini">
+                                <div class="stats-mini-item">
+                                    <div class="label">Planificación Total</div>
+                                    <div class="value" id="planificacion-total-kg">0 kg</div>
+                                </div>
+                                <div class="stats-mini-item">
+                                    <div class="label">Producción Total</div>
+                                    <div class="value" id="produccion-total-kg">0 kg</div>
+                                </div>
+                                <div class="stats-mini-item">
+                                    <div class="label">Diferencia</div>
+                                    <div class="value" id="diferencia-total">0 kg</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grafico-card">
+                            <div class="grafico-header">
+                                <i class="fas fa-chart-pie"></i>
+                                <div>
+                                    <h4>Rendimiento por Producto</h4>
+                                    <p>Porcentaje de eficiencia (%)</p>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="rendimientoChart" style="width:100%; max-height: 220px;"></canvas>
+                            </div>
+                            <div class="leyenda-rendimiento" id="leyenda-rendimiento"></div>
+                            <div id="rendimiento-general" class="rendimiento-badge">
+                                Rendimiento General: --%
+                            </div>
+                        </div>
+
+                        <div class="grafico-card">
+                            <div class="grafico-header">
+                                <i class="fas fa-trash-alt"></i>
+                                <div>
+                                    <h4>Merma por Producto</h4>
+                                    <p>Pérdidas en kilogramos</p>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="mermaChart" style="width:100%; max-height: 220px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido de la pestaña Comparativa (nuevo) -->
+            <div id="tabComparativa" class="tab-content">
+                <div class="comparacion-resumen-container" id="comparacionGraficos">
+                    <div class="dashboard-layout">
+                        <div class="resumen-table-section">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 style="color: var(--venepan-red);">
+                                        <i class="fas fa-table"></i> Comparativa de Producción por Producto
+                                    </h3>
+                                </div>
+                                <div style="overflow-x:auto;">
+                                    <table id="tablaComparativa" style="width:100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background-color: #f8f9fa; border-bottom: 2px solid var(--venepan-red);">
+                                                <th>Producto</th>
+                                                <th id="thMes1">Mes 1 (Kg)</th>
+                                                <th id="thMes2">Mes 2 (Kg)</th>
+                                                <th>Variación</th>
+                                                <th>Tendencia</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyComparativa">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="graficos-section">
+                            <div class="grafico-card">
+                                <div class="grafico-header">
+                                    <i class="fas fa-chart-line"></i>
+                                    <div>
+                                        <h4>Evolución Producción</h4>
+                                        <p>Comparativa mes a mes (Kg)</p>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="evolucionChart" style="width:100%; max-height: 300px;"></canvas>
+                                </div>
+                            </div>
+                            <div class="grafico-card">
+                                <div class="grafico-header">
+                                    <i class="fas fa-chart-line"></i>
+                                    <div>
+                                        <h4>Variación Porcentual</h4>
+                                        <p>Crecimiento/Decrecimiento por producto</p>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="variacionChart" style="width:100%; max-height: 250px;"></canvas>
+                                </div>
+                            </div>
+                            <div class="grafico-card">
+                                <div class="grafico-header">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    <div>
+                                        <h4>Resumen Comparativo</h4>
+                                        <p>Métricas clave</p>
+                                    </div>
+                                </div>
+                                <div id="resumenComparativo" style="padding: 15px;">
+                                    <p style="text-align: center; color: #7f8c8d;">Selecciona dos meses para comparar</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="menu.js"></script>
+    <script src="Resumen.js"></script>
+</body>
+</html>
